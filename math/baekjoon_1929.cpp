@@ -1,29 +1,36 @@
 #include <iostream>
-#include <cmath>
 using namespace std;
 
 int main(void){
     //입력받기
     int M, N;
     cin >> M >> N;
+    int nums[N+1];
 
-    for(int i = M; i <= N; i++){
-        //1이면 소수 아님
-        if(i == 1) continue;
-
-        //소수인지 확인
-        bool sosu = true;
-        for(int j = 2; j <= sqrt(i); j++){
-            
-            if(i % j == 0){
-                sosu = false;
-                break;
-            }
-        }
-
-        //소수라면 출력
-        if(sosu) cout << i << endl;
+    //배열 초기화
+    for(int i = 0; i < N+1; i++){
+        nums[i] = i;
     }
 
+    for(int i = 1; i < N+1; i++){
+        //이미 소수 아니라면, 패스
+        if(nums[i] == 0) continue;
+        if(nums[i] == 1){
+            nums[i] = 0;
+            continue;
+        }
+
+        //이 수의 배수 지우기
+        for(int j = i*2; j < N+1; j+=i){
+            nums[j] = 0;
+        }
+    }
+
+    //출력
+    for(int i = M; i < N+1; i++){
+        if(nums[i] != 0)
+            cout << nums[i] << endl;
+    }
+    
     return 0;
 }
