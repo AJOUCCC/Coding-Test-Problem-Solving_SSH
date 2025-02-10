@@ -2,58 +2,65 @@
 #include <vector>
 #include <string>
 using namespace std;
+string c[101][101];
 
-string mult(string n1, string n2){
-    //계산을 위한 n2 x n1+n2-1 배열 선언
-    vector<vector<int>> mult_matrix(n2.size(), vector<int>(n1.size() + n2.size() -1, 0));
-    
-    for(int i = n1.size() - 1; i > 0; i--){
-        for(int j = n2.size() - 1; j > 0; j--){
-            int rn1 = n1[i] - '0';
-            int rn2 = n2[j] = '0';
-            mult_matrix[j][i+j] = rn1 * rn2;
-        }
+string add(string a, string b){
+    //최대 크기 + 1의 배열 선언
+    int new_size;
+    if(a.size() > b.size()){
+        new_size = a.size();
+        while(a.size() != b.size())
+            b.insert(b.begin(), '0');
     }
-
-    //각각의 곱셈된 것을 합치기
-    string new_num;
-    int over_number = 0;
-    for(int i = n1.size() + n2.size() -1; i > 0; i--){
-        int sum = 0;
-        for(int j = n2.size() - 1; j > 0; j--){
-            sum += mult_matrix[j][i];
-        } 
-        sum += over_number;
-
-        if(sum > 10){
-            over_number = sum / 10;
-            sum = sum % 10;
-        } 
-
-        new_num.push_back(sum + '0');
-    }
-
-    return new_num;
-}
-
-char* div(char* n1, char* n2){
-
-}
-
-string fatorial(string n){
-  
-    if(n.size() <= 1 && n[0]-'0' == 0) return n; 
     else{
-        string lower_str(n);
-        int end = lower_str.size()-1;
-        if(lower_str[end] % 10 != 0){
-            lower_str[end] = lower_str[end] % 10 - 1;
+        new_size = b.size();
+        while(a.size() != b.size())
+            a.insert(a.begin(), '0');
+    }
+
+       
+    //덧셈 계산
+    int up = 0;
+    string result;
+    for(int i = new_size-1; i >= -1; i--){
+        //마지막 올림 자리 때
+        if(i == -1){
+            if(up != 0)
+                result.insert(result.begin(), up +'0');
+            break;
+        }
+
+        //평소에는...
+        int an = a[i]-'0';
+        int bn = b[i]-'0';
+        int sum = an + bn + up;
+        if(sum >= 10){
+            up = sum / 10;
+            result.insert(result.begin(), sum % 10 +'0');
         }
         else{
-            lower_str[end-1] = lower_str[end-1] - 1;
+            up = 0;
+            result.insert(result.begin(), sum +'0');
         }
-        return mult(n, factorial(lower_str));
     }
+    return result;
+}
+
+string comb(int n, int m){
+    //이미 있다면 가져오기
+    if(!c[n][m].empty())
+        return c[n][m];
+
+    //끝내는 조건
+    if(n == m || m == 0){
+        c[n][m] = "1";
+        return "1";
+    }
+    
+    //파스칼의 삼각형
+    string result = add(comb(n-1, m-1), comb(n-1, m));
+    c[n][m] = result;
+    return result;
 }
 
 int main(void){
@@ -61,26 +68,13 @@ int main(void){
     cin >> N >> M;
 
     //계산 효율을 위한 식 변경
-    if(M > 50){
-        M = 100 - M;
+    if(N/2 < M){
+        M = N - M;
     }
 
     //nCm 계산
-    unsigned long long big = 1;
-    unsigned long long small = 1;
-    int temp = N;
-    for(int i = M; i > 1; i--){
-        small *= i;
-    }
-    for(int i = 0; i < M; i++){
-        big *= temp--;
-        for(int j = 0; j < M; j++){
-            if(smalls[j+1] != 0 && big % smalls[j+1] == 0) {
-                big /= smalls[j+1];
-                smalls[j+1] = 0;
-            }
-        }
-    }
-    cout << big << endl;
+    string result;
+    result = comb(N, M);
+    cout << result << "\n";
 
 }
