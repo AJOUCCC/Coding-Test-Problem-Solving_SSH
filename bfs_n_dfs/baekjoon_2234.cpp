@@ -42,7 +42,7 @@ int main(void){
     cin >> M >> N;
     vector<vector<int>> m = vector<vector<int>>(N, vector<int>(M, 0)); //성곽 정보
     vector<vector<bool>> visited = vector<vector<bool>>(N, vector<bool>(M, false)); // 방문 여부
-    vector<pair<int,int>> rooms; //방 속 노드의 수수
+    vector<pair<int,int>> rooms; //방 속 노드의 수
     queue<pair<int,int>> qu;
     for(int i = 0; i < N; i++){
         for(int j = 0; j < M; j++){
