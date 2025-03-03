@@ -1,4 +1,20 @@
 {
+    "editor.quickSuggestions": {
+        "comments": "off",
+        "strings": "off",
+        "other": "off"
+    },
+    "editor.suggestOnTriggerCharacters": false,
+    "editor.wordBasedSuggestions": "off",
+    "editor.parameterHints.enabled": false,
+    "editor.semanticHighlighting.enabled": false,
+    "editor.semanticTokenColorCustomizations": {
+        "rules": {
+            "templateType": {
+                "foreground": "#ff0000",
+            }
+        }
+    },
     "files.associations": {
         "*.sqlbook": "sql",
         "*.ndjson": "jsonl",
@@ -41,6 +57,10 @@
         "new": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
-    }
+        "typeinfo": "cpp",
+        "list": "cpp"
+    },
+    "C_Cpp.enhancedColorization": "disabled",
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.intelliSenseEngine": "Tag Parser",
 }
