@@ -3,55 +3,27 @@
 #include <stack>
 using namespace std;
 
+vector<int> xp = {-1, 0, 1, 0};
+vector<int> yp = {0, 1, 0, -1};
 int lighten_one(vector<vector<char>> &map, stack<pair<int,int>> &st, pair<int,int> pos, int direction){
     int push_cnt = 0;
-    switch(direction){
-        case 0: //위
-            for(int i = pos.first; i >= 0; i--){
-                if(map[i][pos.second] == '0'){
-                    map[i][pos.second] = '#';
-                    st.push(make_pair(i, pos.second));
-                    push_cnt++;
-                }
-                else if(map[i][pos.second] == '6')
-                    break;
-            }
+    int dx = pos.first, dy = pos.second;
+    while(true){
+        //현 위치가 유효하지 않다면 그만
+        if(dx < 0 || dx >= map.size() || dy < 0 || dy >= map[0].size()) 
             break;
-        case 1: //오른쪽 
-            for(int i = pos.second; i < map[0].size(); i++){
-                if(map[pos.first][i] == '0'){
-                    map[pos.first][i] = '#';
-                    st.push(make_pair(pos.first, i));
-                    push_cnt++;
-                }
-                else if(map[pos.first][i] == '6')
-                    break;
-            }
-            break;
-        case 2:  //아래 
-            for(int i = pos.first; i < map.size(); i++){
-                if(map[i][pos.second] == '0'){
-                    map[i][pos.second] = '#';
-                    st.push(make_pair(i, pos.second));
-                    push_cnt++;
-                }
-                else if(map[i][pos.second] == '6')
-                    break;
-            }
-            break;
-        case 3: //왼쪽 
-            for(int i = pos.second; i >= 0; i--){
-                if(map[pos.first][i] == '0'){
-                    map[pos.first][i] = '#';
-                    st.push(make_pair(pos.first, i));
-                    push_cnt++;
-                }
-                else if(map[pos.first][i] == '6')
-                    break;
-            }
-            break;
-        default: break;
-    }  
+        else if(map[dx][dy] == '6')
+            break;        
+
+        //유효하다면, 현 위치 밝히기
+        if(map[dx][dy] == '0'){
+            map[dx][dy] = '#';
+            st.push(make_pair(dx, dy));
+            push_cnt++;
+        }
+        dx += xp[direction];
+        dy += yp[direction];
+    }
     return push_cnt;
 }
 
@@ -65,6 +37,14 @@ void unlighten_one(vector<vector<char>> &map, stack<pair<int,int>> &st, int push
 }
 
 int min_cnt = 0;
+vector<vector<vector<int>>> POS_N = {
+    {},
+    {{0}, {1}, {2}, {3}}, 
+    {{0, 2}, {1, 3}},
+    {{0, 1}, {1, 2}, {2, 3}, {3, 0}}, 
+    {{0, 1, 2}, {1, 2, 3}, {2, 3, 0}, {3, 0, 1}},
+    {{0, 1, 2, 3}}
+};
 void simul_cctv(vector<vector<char>> &map, vector<pair<int,int>> &cctvs, stack<pair<int,int>> &st, int cctv){
     //cctv == CCTV_SIZE라면 현 지도에서 0을 세서 최솟값이면 업데이트 후 리턴
     if(cctv == cctvs.size()){
@@ -78,62 +58,14 @@ void simul_cctv(vector<vector<char>> &map, vector<pair<int,int>> &cctvs, stack<p
     }
 
     //아니라면 cctv번째의 cctv의 방향을 세부 설정(for문)
-    switch(map[cctvs[cctv].first][cctvs[cctv].second]){
-        case '1':
-            //방향을 선택
-            //방향 선택에 따른 map 수정 및 큐에 수정된 좌표 넣기
-            //재귀 호출
-            //큐에서 수정된 좌표 꺼내고, map 원상복귀
-            {
-                for(int i = 0; i < 4; i++){
-                    int push_cnt = lighten_one(map, st, cctvs[cctv], i);
-                    simul_cctv(map, cctvs, st, cctv+1);
-                    unlighten_one(map, st, push_cnt);
-                }
-            }
-            break;
-        case '2':
-            {
-                for(int i = 0; i < 2; i++){
-                    int push_cnt = lighten_one(map, st, cctvs[cctv], i);
-                    push_cnt += lighten_one(map, st, cctvs[cctv], i+2);
-                    simul_cctv(map, cctvs, st, cctv+1);
-                    unlighten_one(map, st, push_cnt);
-                }
-            }
-            break;
-        case '3':
-            {
-                for(int i = 0; i < 4; i++){
-                    int push_cnt = lighten_one(map, st, cctvs[cctv], i);
-                    push_cnt += lighten_one(map, st, cctvs[cctv], (i+1) % 4);
-                    simul_cctv(map, cctvs, st, cctv+1);
-                    unlighten_one(map, st, push_cnt);
-                }
-            }
-            break;
-        case '4':
-            {
-                for(int i = 0; i < 4; i++){
-                    int push_cnt = lighten_one(map, st, cctvs[cctv], i);
-                    push_cnt += lighten_one(map, st, cctvs[cctv], (i+1) % 4);
-                    push_cnt += lighten_one(map, st, cctvs[cctv], (i+2) % 4);
-                    simul_cctv(map, cctvs, st, cctv+1);
-                    unlighten_one(map, st, push_cnt);
-                }
-            }
-            break;
-        case '5':
-            {
-                int push_cnt = lighten_one(map, st, cctvs[cctv], 0);
-                push_cnt += lighten_one(map, st, cctvs[cctv], 1);
-                push_cnt += lighten_one(map, st, cctvs[cctv], 2);
-                push_cnt += lighten_one(map, st, cctvs[cctv], 3);
-                simul_cctv(map, cctvs, st, cctv+1);
-                unlighten_one(map, st, push_cnt);
-            }
-            break;
-        default: break;
+    int direction = map[cctvs[cctv].first][cctvs[cctv].second] - '0';
+    for(int i = 0; i < POS_N[direction].size(); i++){
+        int push_cnt = 0;
+        for(int j = 0; j < POS_N[direction][i].size(); j++){
+            push_cnt += lighten_one(map, st, cctvs[cctv], POS_N[direction][i][j]); 
+        }
+        simul_cctv(map, cctvs, st, cctv+1);
+        unlighten_one(map, st, push_cnt);
     }        
 }
 
