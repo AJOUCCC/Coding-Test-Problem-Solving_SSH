@@ -16,6 +16,11 @@ void union_f(int a, int b){
 }
 
 int main(void){
+    //시간초과 방지
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
     //입력
     int n, m;
     cin >> n >> m;
